@@ -124,31 +124,31 @@ void vk_assert_never_reached_fail( const char* file,
 QString vk_mkstemp( QString filepath, QString ext/*=QString::null*/ )
 {
    // create tempfiles with datetime, so can sort easily if they stay around
-   
+
    QString datetime = QDateTime::currentDateTime().toString( "_yyyy.MM.dd_hh:mm:ss" );
    QString unique = filepath + datetime;
-   
+
    if ( !ext.isNull() ) {
       unique +=  "." + ext;
    }
-   
+
    if ( QFile::exists( unique ) ) {
       /* fall back on mkstemp */
       char* tmpname = vk_str_malloc( unique.length() + 10 );
       sprintf( tmpname, "%s.XXXXXX", qPrintable( unique ) );
       int fd = mkstemp( tmpname );
-      
+
       if ( fd == -1 ) {
          /* something went wrong */
          VK_DEBUG( "failed to create unique filename from '%s'.",
                    qPrintable( filepath ) );
          return QString::null;
       }
-      
+
       unique = QString( tmpname );
       tmpname = vk_str_free( tmpname );
    }
-   
+
    return unique;
 }
 
@@ -160,11 +160,11 @@ QString vk_mkstemp( QString filepath, QString ext/*=QString::null*/ )
 int strVersion2hex( QString ver_str )
 {
    QRegExp rxver( ".*(\\d{1,2})\\.(\\d{1,2})\\.(\\d{1,2}).*" );
-   
+
    if ( rxver.indexIn( ver_str ) == -1 ) {
       return -1;
    }
-   
+
    int major = rxver.cap( 1 ).toInt();
    int minor = rxver.cap( 2 ).toInt();
    int patch = rxver.cap( 3 ).toInt();
@@ -178,7 +178,7 @@ int strVersion2hex( QString ver_str )
 QString escapeEntities( const QString& content )
 {
    QString ret_str = "";
-   
+
    for ( int i = 0; i < content.length(); i++ ) {
       switch ( content[i].toLatin1() ) {
       case '<':
@@ -204,7 +204,7 @@ QString escapeEntities( const QString& content )
          break;
       }
    }
-   
+
    return ret_str;
 }
 
@@ -227,7 +227,7 @@ void* vk_free( const void* ptr )
       free(( void* )ptr );
       ptr = NULL;
    }
-   
+
    return NULL;
 }
 
@@ -236,7 +236,7 @@ char* vk_str_free( const char* ptr )
    if ( ptr != NULL ) {
       free(( char* )ptr );
    }
-   
+
    return NULL;
 }
 
@@ -244,11 +244,11 @@ void* vk_malloc( unsigned long n_bytes )
 {
    void* mem;
    mem = malloc( n_bytes );
-   
+
    if ( !mem ) {
       VK_DEBUG( "failed to allocate %lu bytes", n_bytes );
    }
-   
+
    return mem;
 }
 
@@ -257,12 +257,12 @@ char* vk_str_malloc( int sz )
 {
    char* arr;
    arr = ( char* ) malloc(( size_t )(( sz + 2 ) * sizeof( char ) ) );
-   
+
    if ( !arr ) {
       VK_DEBUG( "malloc failure: virtual memory exhausted" );
       vk_assert_never_reached();
    }
-   
+
    return arr;
 }
 
@@ -275,13 +275,13 @@ bool vk_strcmp( const char* str1, const char* str2 )
                 "str1 == %s, str2 == %s\n", str1, str2 );
       return false;
    }
-   
+
    if (( strlen( str1 ) == 0 ) || ( strlen( str2 ) == 0 ) ) {
       VK_DEBUG( "one of these two strings is empty:\n"
                 "\tstr1: -->%s<--, str2: -->%s<--\n", str1, str2 );
       return false;
    }
-   
+
    return ( strcmp( str1, str2 ) == 0 ) ? true : false;
 }
 
@@ -290,7 +290,7 @@ char* vk_strdup( const char* str )
 {
    char* new_str;
    unsigned int length;
-   
+
    if ( str ) {
       length = strlen( str ) + 1;
       new_str = vk_str_malloc( length );
@@ -299,7 +299,7 @@ char* vk_strdup( const char* str )
    else {
       new_str = NULL;
    }
-   
+
    return new_str;
 }
 
@@ -499,7 +499,7 @@ QString vkDlgGetFile( QWidget* parent,
    QString cfg_key_filterlist = "";        // glbl key, built from key_path
    QString cfg_key_filter = "";            // glbl key, built from key_path
    QString start_dir = start_path;
-   
+
    if ( start_dir.isEmpty() ) {
       start_dir = "./";
    }
@@ -531,12 +531,12 @@ QString vkDlgGetFile( QWidget* parent,
    QString caption = "Choose File";
    if ( mode == QFileDialog::AcceptSave )
       caption = "Save As";
-   
+
    QFileDialog dlg( parent, caption, start_dir, filterlist );
    dlg.setFileMode(QFileDialog::AnyFile);
    dlg.setViewMode(QFileDialog::Detail);
    dlg.setAcceptMode( mode );
-   dlg.selectFilter( filter );
+   dlg.selectNameFilter( filter );
 
    // Run dialog - get filename to save to: asks for overwrite confirmation
    QString fname;
@@ -545,11 +545,11 @@ QString vkDlgGetFile( QWidget* parent,
       if ( !fileNames.isEmpty() )
          fname = fileNames.first();
    }
-   
+
    // save chosen filter (if changed) for next time
    if ( !cfg_key_path.isEmpty() ) {
       QString filter_new = dlg.selectedNameFilter();
-      
+
       if ( filter_new != filter ) {
          vkCfgGlbl->setValue( cfg_key_filter, filter_new );
       }
@@ -579,7 +579,7 @@ QString vkDlgCfgGetFile( QWidget* parent,
    QString start_path = "./";               // default dir
    bool pathIsDir = true;
    bool isProjKey = true;                  // is key_path a project key
-   
+
    // setup start directory
    if ( !cfg_key_path.isEmpty() ){
       QFileInfo fi;
@@ -606,10 +606,10 @@ QString vkDlgCfgGetFile( QWidget* parent,
          // ignore a bad path.
       }
    }
-   
+
    QString fname = vkDlgGetFile( parent, start_path, cfg_key_path, mode );
 
-   // save chosen path to cfg for next time   
+   // save chosen path to cfg for next time
    if ( !cfg_key_path.isEmpty() && !fname.isEmpty() ) {
       QString path = fname;
       QFileInfo fi( path );
@@ -619,7 +619,7 @@ QString vkDlgCfgGetFile( QWidget* parent,
       else
          vkCfgGlbl->setValue( cfg_key_path, path );
    }
-   
+
    return fname;
 }
 
@@ -639,7 +639,7 @@ QString vkDlgGetDir( QWidget* parent, const QString& start_dir/*="./"*/ )
    dlg.setViewMode( QFileDialog::Detail );
    dlg.setAcceptMode( QFileDialog::AcceptOpen );
    dlg.setOption( QFileDialog::ShowDirsOnly );
-   
+
    // Run dialog - get filename to save to: asks for overwrite confirmation
    QString dir_selected;
    if ( dlg.exec() ) {
@@ -658,7 +658,7 @@ QString vkDlgGetDir( QWidget* parent, const QString& start_dir/*="./"*/ )
    - cfg_key_path is the (proj/glbl) cfg key for the start directory
   The cfg is updated if a directory is chosen.
   Returns: chosen directory path
-  
+
   Note: don't use from options pages: they save to cache already.// - careful: don't use in options pages: don't want to save cfg before our turn!
 */
 QString vkDirCfgDialog( QWidget* parent,
@@ -670,16 +670,14 @@ QString vkDirCfgDialog( QWidget* parent,
       QFileInfo fi( vkCfgProj->value( cfg_key_dir ).toString() );
       start_dir = fi.exists() ? fi.absolutePath() : "./";
    }
-   
+
    QString dirname = vkDlgGetDir( parent, start_dir );
-   
-   // save chosen directory for next time   
+
+   // save chosen directory for next time
    if ( !cfg_key_dir.isEmpty() && !dirname.isEmpty() ) {
       vkCfgProj->setValue( cfg_key_dir, dirname );
    }
-   
+
    return dirname;
 }
 #endif
-
-

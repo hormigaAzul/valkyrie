@@ -248,7 +248,7 @@ void TopStatusItem::updateStatus( QDomElement status )
    int sday, shours, smins, ssecs, smsecs;
    int eday, ehours, emins, esecs, emsecs;
    int ret;
-   
+
    // Vg >= v3.1 (i.e. >= protocol 2) outputs:
    //  - "elapsed wallclock time since process start"
    bool ok;
@@ -260,12 +260,12 @@ void TopStatusItem::updateStatus( QDomElement status )
    }
 
    // start count
-   ret = sscanf( start_time.toAscii().constData(), "%d:%d:%d:%d.%4d",
+   ret = sscanf( start_time.toLatin1().constData(), "%d:%d:%d:%d.%4d",
                  &sday, &shours, &smins, &ssecs, &smsecs );
 
    if ( ret == 5 ) {
       QString end_time = status.firstChildElement( "time" ).text();
-      ret = sscanf( end_time.toAscii().constData(), "%d:%d:%d:%d.%4d",
+      ret = sscanf( end_time.toLatin1().constData(), "%d:%d:%d:%d.%4d",
                     &eday, &ehours, &emins, &esecs, &emsecs );
 
       if ( ret == 5 ) {
@@ -310,7 +310,7 @@ void TopStatusItem::updateFromErrorCounts( QDomElement errcnts )
    num_errs = 0;
    QDomNodeList pairs = errcnts.childNodes();
    QDomElement e = pairs.item( 0 ).toElement();
-   
+
    for ( ; !e.isNull(); e = e.nextSiblingElement() ) {
       QString count = e.firstChildElement().text();
       num_errs += count.toInt();
@@ -341,15 +341,15 @@ InfoItem::InfoItem( VgOutputItem* parent, QDomElement root /*element:ROOT*/ )
    tool[0] = tool[0].toUpper();
    QString pid = elem.firstChildElement( "pid" ).text();
    QString ppid = elem.firstChildElement( "ppid" ).text();
-   
+
    QString content =
       QString( "%1 output for process id ==%2== (parent pid ==%3==)" )
       .arg( tool )
       .arg( pid )
       .arg( ppid );
-      
+
    setText( content );
-   
+
    isExpandable = true;
 }
 
@@ -365,14 +365,14 @@ void InfoItem::setupChildren()
          last_item->openChildren();
          logqual = logqual.nextSiblingElement();
       }
-      
+
       // may / may not have a user comment
       QDomElement comment = elem.firstChildElement( "usercomment" );
       if ( ! comment.isNull() ) {
          last_item = new VgOutputItem( this, last_item, comment );
          last_item->setText( comment.text() );
       }
-      
+
       // args
       QDomElement args = elem.firstChildElement( "args" );
       last_item = new ArgsItem( this, last_item, args );
@@ -435,7 +435,7 @@ void ArgsItem::setupChildren()
    if ( childCount() == 0 ) {
       QDomElement vgInfo = elem.firstChildElement( "vargv" );
       QDomElement exInfo = elem.firstChildElement( "argv" );
-      
+
       VgOutputItem* last_item = 0;
       QDomElement e = vgInfo.firstChildElement();
       for ( ; !e.isNull(); e = e.nextSiblingElement() ) {
@@ -448,7 +448,7 @@ void ArgsItem::setupChildren()
          last_item = new VgOutputItem( this, last_item, e );
          last_item->setText( e.text() );
       }
-      
+
       e = exInfo.firstChildElement();
       for ( ; !e.isNull(); e = e.nextSiblingElement() ) {
 #ifdef DEBUG_ON
@@ -529,7 +529,7 @@ ErrorItem::ErrorItem( VgOutputItem* parent, QTreeWidgetItem* after,
 
    err_tmplt  = acnym + " [%1]: " + description;
    updateCount( "1" );
-   
+
    // Store suppression for later use
    QDomElement supp = elem.firstChildElement( "suppression" );
    if ( !supp.isNull() ) {
@@ -749,24 +749,24 @@ FrameItem::FrameItem( VgOutputItem* parent, QTreeWidgetItem* after,
    // check what perms the user has w.r.t. this file
    QDomElement srcdir  = frm.firstChildElement( "dir" );
    QDomElement srcfile = frm.firstChildElement( "file" );
-   
+
    if ( !srcfile.isNull() ) {
       QString path;
-      
+
       if ( !srcdir.isNull() ) {
          path = srcdir.text() + "/";
       }
-      
+
       path += srcfile.text();
-      
+
       QFileInfo fi( path );
-      
+
       if ( fi.exists() && fi.isFile() /* && !fi.isSymLink() */) {
          isReadable  = fi.isReadable();
          isWriteable = fi.isWritable();
       }
    }
-   
+
    setText( describe_IP( false ) );
 
    isExpandable = isReadable;
@@ -789,11 +789,11 @@ void FrameItem::setupChildren()
       QDomElement srcdir  = elem.firstChildElement( "dir" );
       QDomElement srcfile = elem.firstChildElement( "file" );
       QDomElement line    = elem.firstChildElement( "line" );
-      
+
       if ( srcfile.isNull() ) {
          return;
       }
-      
+
       QString path;
       if ( !srcdir.isNull() ) {
          path = srcdir.text() + "/";
@@ -804,7 +804,7 @@ void FrameItem::setupChildren()
                      qPrintable( srcdir.text() ), qPrintable( srcfile.text() ) );
          return;
       }
-      
+
       // create the item for the src lines
       new SrcItem( this, line, path );
    }
@@ -874,11 +874,11 @@ SrcItem::SrcItem( VgOutputItem* parent, QDomElement line, QString path )
 {
    // --- setup text ---
    int target_line = line.text().toInt();
-   
+
    if ( target_line < 0 ) {
       target_line = 0;
    }
-   
+
    // num lines to show above / below the target line
    bool ok = false;
    int n_lines = vkCfgProj->value( "valkyrie/src-lines" ).toInt( &ok );
@@ -893,16 +893,16 @@ SrcItem::SrcItem( VgOutputItem* parent, QDomElement line, QString path )
    }
    int bot_line = target_line + n_lines;
    int current_line = 1;
-   
+
    QFile file( path );
    if ( !file.open( QIODevice::ReadOnly ) ) {
       return;
-   }   
-   
+   }
+
    // TODO: faster to set file pos using QFile::at(offset)
    QString src_lines;
    QTextStream stream( &file );
-   
+
    while ( !stream.atEnd() && ( current_line <= bot_line ) ) {
       if ( current_line < top_line ) {
          stream.readLine();   // skip lines to top_line
@@ -910,17 +910,17 @@ SrcItem::SrcItem( VgOutputItem* parent, QDomElement line, QString path )
       else {
          src_lines += "  " + stream.readLine() + "\n";
       }
-      
+
       current_line++;
    }
-   
+
    file.close();
    src_lines.truncate( src_lines.length() - 1 ); // remove last newline
-   
+
    // --- setup item ---
    isReadable  = parent->getIsReadable();
    isWriteable = parent->getIsWriteable();
-   
+
    // if we got this far, the source is at least readable.
    vk_assert( isReadable == true );
 
@@ -930,7 +930,7 @@ SrcItem::SrcItem( VgOutputItem* parent, QDomElement line, QString path )
    else {                // readonly
       setIcon( 0, QPixmap( QString::fromUtf8( ":/vk_icons/icons/vglogview_readonly.xpm" ) ) );
    }
-   
+
    setText( src_lines );
 
    // pale gray background colour.
@@ -993,7 +993,7 @@ void SuppCountsItem::setupChildren()
          QString count_str = count.text();
          QString name_str  = name.text();
          QString supp_str = QString( "%1:  " + name_str ).arg( count_str, 4 );
-         
+
          child_item = new VgOutputItem( this, child_item, pair );
          child_item->setText( supp_str );
       }
@@ -1149,7 +1149,7 @@ bool VgLogView::appendNode( QDomNode node, QString& errMsg )
 
       // update topStatus
       topStatus->updateFromErrorCounts( elem );
-      
+
       // update all non-leak errors
       updateErrorItems( elem );
       break;

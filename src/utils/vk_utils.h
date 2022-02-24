@@ -20,6 +20,9 @@
 #ifndef __VK_UTILS_H
 #define __VK_UTILS_H
 
+// This is required for usleep. Why was it missing????
+#include <unistd.h>
+
 #include <stdio.h>          // printf and friends
 #include <iostream>
 

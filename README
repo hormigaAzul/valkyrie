@@ -1,14 +1,14 @@
 Fork Notes
 -----------
-This repository forks the original Valkyrie repository found at svn://svn.valgrind.org/valkyrie from HEAD=r546
-The intention of this fork is to revive the vk_logmerge tool which then should be able to process XML output of more recent version of Valgrind.
+This repository forks the fork of the original Valkyrie repository found at svn://svn.valgrind.org/valkyrie from HEAD=r546
+The intention of this fork is to update the program and make it compatible with current versions of Qt.
 
 Release Notes for Valkyrie
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Valkyrie version 2.0.1.SVN supports Valgrind 3.6.x.
 Valkyrie supports the Valgrind tools Memcheck and Helgrind.
 
-Valkyrie is licensed under the GNU General Public License, version 2. 
+Valkyrie is licensed under the GNU General Public License, version 2.
 Read the file COPYING in the source distribution for details.
 
 For instructions on how to build/install, see the INSTALL file.
@@ -29,7 +29,7 @@ To check out Valkyrie via anonymous, read-only svn access:
 
 Requirements
 ~~~~~~~~~~~~
-Qt (version 4.6 or later, earlier 4.x might also work) <http://www.trolltech.com>
+Qt (version 5 or later, earlier 4.8 might also work)
 Valgrind (3.6.x series) <http://www.valgrind.org>
 
 
@@ -55,4 +55,3 @@ For more help on Valkyrie, use the built-in Help->Handbook.
 The Valkyrie Developers
 Please report any problems encountered with valkyrie to
 <info@open-works.co.uk>
-

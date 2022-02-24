@@ -5,6 +5,9 @@
 # qmake "PREFIX=/path/to/install/tree"
 ######################################################################
 
+QT       += core gui printsupport widgets
+
+greaterThan(QT_MAJOR_VERSION, 4)
 
 VK_ROOT = ..
 

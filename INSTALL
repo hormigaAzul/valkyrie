@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Valkyrie is a Qt4 application and uses qmake as part of the build
+Valkyrie is a Qt5 application and uses qmake as part of the build
 process.  qmake is part of your Qt4 installation.  You should check
 that you have the correct qmake version, by running "qmake --version",
 because in some cases the installed "qmake" is actually a Qt3 version.
@@ -25,12 +25,10 @@ In particular, you may want to edit the following:
   CONFIG           += silent      # make --quiet
   CONFIG           += debug       # release/debug
 
-
-
 Build and run without "installing"
 ==================================
 
-qmake   # or qmake-qt4, see comments above
+qmake
 make
 
 The valkyrie binary is put here: ./bin/valkyrie

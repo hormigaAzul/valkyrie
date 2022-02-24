@@ -67,11 +67,11 @@ MemcheckView::MemcheckView( QWidget* parent )
    : ToolView( parent, VGTOOL::ID_MEMCHECK ), logview(0)
 {
    setObjectName( QString::fromUtf8( "MemcheckView" ) );
-   
+
    setupLayout();
    setupActions();
    setupToolBar();
-   
+
    // enable | disable show*Item buttons
    connect( treeView, SIGNAL( itemSelectionChanged() ),
             this,       SLOT( updateItemActions() ) );
@@ -121,7 +121,7 @@ VgLogView* MemcheckView::createVgLogView()
    }
 
    logview = new MemcheckLogView( treeView );
-   
+
    // let filter show/hide an item
    connect( logview, SIGNAL(errorItemAdded(VgOutputItem*)),
             logviewFilter, SLOT(showHideItem(VgOutputItem*)) );
@@ -138,14 +138,14 @@ void MemcheckView::setupLayout()
 {
    QVBoxLayout* vLayout = new QVBoxLayout( this );
    vLayout->setMargin(0);
-   
+
    treeView = new QTreeWidget( this );
    treeView->setObjectName( QString::fromUtf8( "treeview_Memcheck" ) );
    treeView->setHeaderHidden( true );
    treeView->setRootIsDecorated( false );
 
    // give us a horizontal scrollbar rather than an ellipsis
-   treeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+   treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
    treeView->header()->setStretchLastSection(false);
 
    // filter
@@ -172,7 +172,7 @@ void MemcheckView::setupActions()
    act_OpenClose_item->setIconVisibleInMenu( true );
    connect( act_OpenClose_item, SIGNAL( triggered() ),
             this,                   SLOT( opencloseOneItem() ) );
-   
+
    act_OpenClose_all = new QAction( this );
    act_OpenClose_all->setObjectName( QString::fromUtf8( "act_OpenClose_all" ) );
    QIcon icon_opencloseall;
@@ -181,7 +181,7 @@ void MemcheckView::setupActions()
    act_OpenClose_all->setIconVisibleInMenu( true );
    connect( act_OpenClose_all, SIGNAL( triggered() ),
             this,                  SLOT( opencloseAllItems() ) );
-   
+
    act_ShowSrcPaths = new QAction( this );
    act_ShowSrcPaths->setObjectName( QString::fromUtf8( "act_ShowSrcPaths" ) );
    QIcon icon_showsrcpaths;
@@ -189,7 +189,7 @@ void MemcheckView::setupActions()
    act_ShowSrcPaths->setIcon( icon_showsrcpaths );
    act_ShowSrcPaths->setIconVisibleInMenu( true );
    connect( act_ShowSrcPaths, SIGNAL( triggered() ), this, SLOT( showSrcPath() ) );
-   
+
    act_OpenLog = new QAction( this );
    act_OpenLog->setObjectName( QString::fromUtf8( "act_OpenLog" ) );
    QIcon icon_openlog;
@@ -197,7 +197,7 @@ void MemcheckView::setupActions()
    act_OpenLog->setIcon( icon_openlog );
    act_OpenLog->setIconVisibleInMenu( true );
    connect( act_OpenLog, SIGNAL( triggered() ), this, SLOT( openLogFile() ) );
-   
+
    act_SaveLog = new QAction( this );
    act_SaveLog->setObjectName( QString::fromUtf8( "act_SaveLog" ) );
    QIcon icon_savelog;
@@ -205,7 +205,7 @@ void MemcheckView::setupActions()
    act_SaveLog->setIcon( icon_savelog );
    act_SaveLog->setIconVisibleInMenu( true );
    connect( act_SaveLog, SIGNAL( triggered() ), this, SIGNAL( saveLogFile() ) );
-   
+
    act_enableFilter = new QAction( this );
    act_enableFilter->setObjectName( QString::fromUtf8( "act_enableFilter" ) );
    QIcon icon_filter;
@@ -219,11 +219,11 @@ void MemcheckView::setupActions()
    act_enableFilter->setChecked( true );
    connect( act_enableFilter, SIGNAL(toggled(bool)),
             logviewFilter, SLOT(enableFilter(bool)) );
-   
+
    // ------------------------------------------------------------
    // initialise actions (enable / disable)
    setState( false );
-   
+
    // ------------------------------------------------------------
    // Text
    act_OpenClose_item->setText(    tr( "Open/Close item" ) );
@@ -232,15 +232,15 @@ void MemcheckView::setupActions()
    act_OpenClose_all->setToolTip(  tr( "Open/Close all Valgrind::ERROR items" ) );
    act_ShowSrcPaths->setText(      tr( "Display simple" ) );
    act_ShowSrcPaths->setToolTip(   tr( "Display short / full source paths" ) );
-   
+
    act_OpenLog->setText(    tr( "Open Log" ) );
    act_OpenLog->setToolTip( tr( "Open Memcheck XML log" ) );
    act_SaveLog->setText(    tr( "Save Log" ) );
    act_SaveLog->setToolTip( tr( "Save Valgrind output to an XML log" ) );
-   
+
    act_enableFilter->setText( tr( "Filters on/off" ) );
    act_enableFilter->setToolTip( tr( "Enable or disable the temporary log filters." ) );
-   
+
 }
 
 
@@ -260,12 +260,12 @@ void MemcheckView::setupToolBar()
    toolToolBar->addAction( act_OpenLog );
    toolToolBar->addAction( act_SaveLog );
    toolToolBar->addAction( act_enableFilter );
-   
+
    // ------------------------------------------------------------
    // Memcheck menu (created in base class)
    toolMenu->setObjectName( QString::fromUtf8( "memcheckMenu" ) );
    toolMenu->setTitle( tr( "Memcheck" ) );
-   
+
    toolMenu->addAction( act_OpenClose_item );
    toolMenu->addAction( act_OpenClose_all );
    toolMenu->addAction( act_ShowSrcPaths );
@@ -282,22 +282,22 @@ void MemcheckView::setupToolBar()
 void MemcheckView::setState( bool run )
 {
    //vkDebug( "MemcheckView::setState( %d )", run );
-   
+
    act_OpenLog->setEnabled( !run );  // just turn off while running
-   
+
    if ( run ) {
       // turn off while running...
       act_OpenClose_item->setEnabled( false );
       act_OpenClose_all->setEnabled( false );
       act_ShowSrcPaths->setEnabled( false );
       act_SaveLog->setEnabled( false );
-      
+
       this->setCursor( QCursor( Qt::WaitCursor ) );
       treeView->clear();
    }
    else {
       unsetCursor();
-      
+
       // ... turn on again only if they can be used
       bool tree_empty = ( treeView->topLevelItemCount() == 0 );
       act_OpenClose_item->setEnabled( false );       // can't enable before item clicked
@@ -405,7 +405,7 @@ void MemcheckView::popupMenu( const QPoint& pos )
    VgOutputItem* item = (VgOutputItem*)treeView->itemAt( pos );
    if ( !item ) return;
 
-   // Setup title   
+   // Setup title
    QAction actTitle( "[Item: " + item->getElement().tagName() + "]", this );
    actTitle.setEnabled(false);
    QFont f = qApp->font();
@@ -420,17 +420,17 @@ void MemcheckView::popupMenu( const QPoint& pos )
    QAction actSuppr( "Add suppression", this );
    if ( ( item->elemType() != VG_ELEM::ERROR ) )
       actSuppr.setEnabled( false );
-   
+
    // the menu
    QMenu menu( treeView );
    menu.addAction( &actTitle );   // title: no action
    menu.addAction( &actCopyTxt ); // plain text of node tree -> clipboard
    menu.addAction( &actCopyXML ); // xml of node tree -> clipboard
    menu.addAction( &actSuppr );
-   
+
    // popup
    QAction* act = menu.exec( treeView->mapToGlobal( pos ) );
-   if ( act == &actCopyTxt ) { 
+   if ( act == &actCopyTxt ) {
       QString txt = item->getElement().text();
       QClipboard *clipboard = QApplication::clipboard();
       clipboard->setText( txt );
@@ -457,7 +457,7 @@ void MemcheckView::popupMenu( const QPoint& pos )
          // Send gathered supp to Options->Supp Editor
          // NOTE: Assuming first supp_file in list is our default
          // TODO:  - document that!
-         
+
          // TODO: this is just nasty. What's an elegant solution?
          VkOptionsDialog optionsDlg( (MainWindow*)this->parent()->parent()->parent() );
          ValgrindOptionsPage* pg = (ValgrindOptionsPage*)optionsDlg.setCurrentPage( 1 );

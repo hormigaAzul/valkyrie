@@ -20,7 +20,7 @@
 
 #include <QApplication>
 #include <QColor>
-#include <QColorGroup>
+#include <QColor>
 #include <QEvent>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -72,24 +72,24 @@ MainWindow::MainWindow( Valkyrie* vk )
 {
    setObjectName( QString::fromUtf8( "MainWindowClass" ) );
    setWindowTitle( VkCfg::appTitle() + " - <no project>" );
-   
+
    lastAppFont = qApp->font();
    lastPalette = qApp->palette();
-   
+
    QIcon icon_vk;
    icon_vk.addPixmap( QPixmap( QString::fromUtf8( ":/vk_icons/icons/valkyrie.xpm" ) ) );
    setWindowIcon( icon_vk );
-   
+
    // handbook: init before menubar / toolbar
    handBook = new HandBook();
-   
+
    // interface setup
    setupLayout();
    setupActions();
    setupMenus();
    setupToolBars();
    setupStatusBar();
-   
+
    // functions for dealing with config updates
    VkOption* opt = valkyrie->getOption( VALKYRIE::ICONTXT );
    connect( opt, SIGNAL( valueChanged() ), this, SLOT( showLabels() ) );
@@ -103,13 +103,13 @@ MainWindow::MainWindow( Valkyrie* vk )
    connect( opt, SIGNAL( valueChanged() ), this, SLOT( setToolFont() ) );
    opt = valkyrie->getOption( VALKYRIE::PALETTE );
    connect( opt, SIGNAL( valueChanged() ), this, SLOT( setPalette() ) );
-   
+
    showLabels();
    showToolTips();
    setGenFont();
    setToolFont();
    setPalette();
-   
+
    updateEventFilters( this );
    updateEventFilters( handBook );
 
@@ -129,12 +129,12 @@ MainWindow::~MainWindow()
 {
    // cleanup toolviews
    delete toolViewStack;
-   
+
    // Save window position to config.
    vkCfgGlbl->setValue( "mainwindow_size", size() );
    vkCfgGlbl->setValue( "mainwindow_pos", pos() );
    vkCfgGlbl->sync();
-   
+
    // handbook has no parent, so have to delete it.
    delete handBook;
    handBook = 0;
@@ -174,7 +174,7 @@ void MainWindow::setupLayout()
 {
    resize( vkCfgGlbl->value( "mainwindow_size", QSize( 600, 600 ) ).toSize() );
    move( vkCfgGlbl->value( "mainwindow_pos", QPoint( 400, 0 ) ).toPoint() );
-   
+
    toolViewStack  = new ToolViewStack( this );
    setCentralWidget( toolViewStack );
 }
@@ -187,7 +187,7 @@ void MainWindow::setupActions()
 {
    // TODO: shortcuts
    // act->setShortcut( tr("Ctrl+XXX") );
-   
+
    actFile_NewProj = new QAction( this );
    actFile_NewProj->setObjectName( QString::fromUtf8( "actFile_NewProj" ) );
    actFile_NewProj->setText( tr( "&New Project..." ) );
@@ -197,7 +197,7 @@ void MainWindow::setupActions()
    actFile_NewProj->setIcon( icon_newproj );
    actFile_NewProj->setIconVisibleInMenu( true );
    connect( actFile_NewProj, SIGNAL( triggered() ), this, SLOT( createNewProject() ) );
-   
+
    actFile_OpenProj = new QAction( this );
    actFile_OpenProj->setObjectName( QString::fromUtf8( "actFile_OpenProj" ) );
    actFile_OpenProj->setText( tr( "&Open Project..." ) );
@@ -207,7 +207,7 @@ void MainWindow::setupActions()
    actFile_OpenProj->setIcon( icon_openproj );
    actFile_OpenProj->setIconVisibleInMenu( true );
    connect( actFile_OpenProj, SIGNAL( triggered() ), this, SLOT( openProject() ) );
-   
+
    for (int i = 0; i < MaxRecentProjs; ++i) {
       actFile_RecentProjs[i] = new QAction(this);
       actFile_RecentProjs[i]->setVisible(false);
@@ -229,7 +229,7 @@ void MainWindow::setupActions()
    actFile_Close->setToolTip( tr( "Close the currently active tool" ) );
    actFile_Close->setText( tr( "&Close Tool" ) );
    connect( actFile_Close, SIGNAL( triggered() ), this, SLOT( closeToolView() ) );
-   
+
    actFile_Exit = new QAction( this );
    actFile_Exit->setObjectName( QString::fromUtf8( "actFile_Exit" ) );
    actFile_Exit->setText( tr( "E&xit" ) );
@@ -239,7 +239,7 @@ void MainWindow::setupActions()
    actFile_Exit->setIcon( icon_exit );
    actFile_Exit->setIconVisibleInMenu( true );
    connect( actFile_Exit, SIGNAL( triggered() ), qApp, SLOT( closeAllWindows() ) );
-   
+
    actEdit_Options = new QAction( this );
    actEdit_Options->setObjectName( QString::fromUtf8( "actEdit_Options" ) );
    actEdit_Options->setText( tr( "O&ptions" ) );
@@ -249,7 +249,7 @@ void MainWindow::setupActions()
    actEdit_Options->setIcon( icon_options );
    actEdit_Options->setIconVisibleInMenu( true );
    connect( actEdit_Options, SIGNAL( triggered() ), this, SLOT( openOptions() ) );
-   
+
    actProcess_Run = new QAction( this );
    actProcess_Run->setObjectName( QString::fromUtf8( "actProcess_Run" ) );
    actProcess_Run->setText( tr( "&Run" ) );
@@ -260,7 +260,7 @@ void MainWindow::setupActions()
    actProcess_Run->setIcon( icon_run );
    actProcess_Run->setIconVisibleInMenu( true );
    connect( actProcess_Run, SIGNAL( triggered() ), this, SLOT( runValgrind() ) );
-   
+
    actProcess_Stop = new QAction( this );
    actProcess_Stop->setObjectName( QString::fromUtf8( "actProcess_Stop" ) );
    actProcess_Stop->setText( tr( "S&top" ) );
@@ -270,7 +270,7 @@ void MainWindow::setupActions()
    actProcess_Stop->setIcon( icon_stop );
    actProcess_Stop->setIconVisibleInMenu( true );
    connect( actProcess_Stop, SIGNAL( triggered() ), this, SLOT( stopTool() ) );
-   
+
    actHelp_Handbook = new QAction( this );
    actHelp_Handbook->setObjectName( QString::fromUtf8( "actHelp_Handbook" ) );
    actHelp_Handbook->setText( tr( "Handbook" ) );
@@ -281,30 +281,30 @@ void MainWindow::setupActions()
    actHelp_Handbook->setIcon( icon_handbook );
    actHelp_Handbook->setIconVisibleInMenu( true );
    connect( actHelp_Handbook, SIGNAL( triggered() ), this, SLOT( openHandBook() ) );
-   
+
    actHelp_About_Valkyrie = new QAction( this );
    actHelp_About_Valkyrie->setObjectName( QString::fromUtf8( "actHelp_About_Valkyrie" ) );
    actHelp_About_Valkyrie->setText( tr( "About Valkyrie" ) );
    //   actHelp_About_Valkyrie->setMenuRole( QAction::AboutRole );
    connect( actHelp_About_Valkyrie, SIGNAL( triggered() ), this, SLOT( openAboutVk() ) );
-   
+
    actHelp_About_Qt = new QAction( this );
    actHelp_About_Qt->setObjectName( QString::fromUtf8( "actHelp_About_Qt" ) );
    actHelp_About_Qt->setText( tr( "About Qt" ) );
    //   actHelp_About_Qt->setMenuRole( QAction::AboutQtRole );
    connect( actHelp_About_Qt, SIGNAL( triggered() ), qApp, SLOT( aboutQt() ) );
-   
+
    actHelp_License = new QAction( this );
    actHelp_License->setObjectName( QString::fromUtf8( "actHelp_License" ) );
    actHelp_License->setText( tr( "License" ) );
    connect( actHelp_License, SIGNAL( triggered() ), this, SLOT( openAboutLicense() ) );
-   
+
    actHelp_Support = new QAction( this );
    actHelp_Support->setObjectName( QString::fromUtf8( "actHelp_Support" ) );
    actHelp_Support->setText( tr( "Support" ) );
    connect( actHelp_Support, SIGNAL( triggered() ), this, SLOT( openAboutSupport() ) );
-   
-   
+
+
    // ------------------------------------------------------------
    // Tool actions - exclusive selection group
    toolActionGroup = new QActionGroup( this );
@@ -312,16 +312,16 @@ void MainWindow::setupActions()
    //toolActionGroup->setExclusive( true );
    connect( toolActionGroup, SIGNAL( triggered( QAction* ) ),
             this,              SLOT( toolGroupTriggered( QAction* ) ) );
-   
+
    QIcon icon_bullet;
    icon_bullet.addPixmap( QPixmap( QString::fromUtf8( ":/vk_icons/icons/tb_mainwin_blackbullet.xpm" ) ) );
-   
+
    ToolObjList tools = valkyrie->valgrind()->getToolObjList();
    vk_assert( tools.size() > 0 );
    foreach( ToolObject * tool, tools ) {
       QString toolname = tool->objectName();
       toolname[0] = toolname[0].toUpper();
-      
+
       QAction* actTool = new QAction( this );
       actTool->setObjectName( "actTool_" + toolname );
       actTool->setCheckable( true );
@@ -329,10 +329,10 @@ void MainWindow::setupActions()
       actTool->setIconVisibleInMenu( true );
       actTool->setText( toolname );
       actTool->setProperty( "toolId", tool->getToolId() );
-      
+
       toolActionGroup->addAction( actTool );
    }
-   
+
    // ------------------------------------------------------------
    // initial enables/disables
    updateVgButtons( false );
@@ -350,7 +350,7 @@ void MainWindow::setupMenus()
    menuBar->setObjectName( QString::fromUtf8( "menuBar" ) );
    menuBar->setGeometry( QRect( 0, 0, 496, 25 ) );
    this->setMenuBar( menuBar );
-   
+
    menuFile = new QMenu( menuBar );
    menuFile->setObjectName( QString::fromUtf8( "menuFile" ) );
    menuFile->setTitle( tr( "&File" ) );
@@ -369,12 +369,12 @@ void MainWindow::setupMenus()
    menuHelp = new QMenu( menuBar );
    menuHelp->setObjectName( QString::fromUtf8( "menuHelp" ) );
    menuHelp->setTitle( tr( "Help" ) );
-   
+
    // application-wide context help button
    ContextHelpAction* ctxtHlpAction = new ContextHelpAction( this, handBook );
    ctxtHlpAction->setText( tr( "Context Help" ) );
-   
-   
+
+
    // ------------------------------------------------------------
    // Add actions to menus
    menuBar->addAction( menuFile->menuAction() );
@@ -382,7 +382,7 @@ void MainWindow::setupMenus()
    menuBar->addAction( menuProcess->menuAction() );
    menuBar->addAction( menuTools->menuAction() );
    menuBar->addAction( menuHelp->menuAction() );
-   
+
    menuFile->addAction( actFile_NewProj );
    menuFile->addAction( actFile_OpenProj );
    menuFile->addMenu( menuRecentProjs );
@@ -396,16 +396,16 @@ void MainWindow::setupMenus()
       menuRecentProjs->addAction( actFile_RecentProjs[i]);
    }
    updateActionsRecentProjs();
-   
+
    menuEdit->addAction( actEdit_Options );
-   
+
    menuProcess->addAction( actProcess_Run );
    menuProcess->addAction( actProcess_Stop );
-   
+
    foreach( QAction * actTool, toolActionGroup->actions() ) {
       menuTools->addAction( actTool );
    }
-   
+
    menuHelp->addAction( ctxtHlpAction );
    menuHelp->addSeparator();
    menuHelp->addAction( actHelp_Handbook );
@@ -428,12 +428,12 @@ void MainWindow::setupToolBars()
    mainToolBar = new QToolBar( this );
    mainToolBar->setObjectName( QString::fromUtf8( "mainToolBar" ) );
    this->addToolBar( Qt::TopToolBarArea, mainToolBar );
-   
+
    // ------------------------------------------------------------
    // Add actions to toolbar
    mainToolBar->addAction( actProcess_Run );
    mainToolBar->addAction( actProcess_Stop );
-   
+
    // Ensures further toolbars are added underneath.
    // TODO: hmm. if add & remove & add toolbars, the toolbar gets added to the side, not under.
    // addToolBarBreak();
@@ -456,10 +456,10 @@ void MainWindow::setupStatusBar()
    QLabel* permanentLabel = new QLabel( mainStatusBar );
    permanentLabel->setObjectName( QString::fromUtf8( "permanentLabel " ) );
 #endif
-   
+
    statusLabel = new QLabel( mainStatusBar );
    statusLabel->setObjectName( QString::fromUtf8( "statusLabel " ) );
-   
+
    mainStatusBar->addWidget( statusLabel, 1 );
 //   mainStatusBar->addPermanentWidget( permanentLabel, 0 );
 }
@@ -503,52 +503,52 @@ bool MainWindow::eventFilter( QObject* obj, QEvent* e )
 void MainWindow::showToolView( VGTOOL::ToolID toolId )
 {
    vk_assert( toolId > VGTOOL::ID_NULL );
-   
+
    if ( toolViewStack->currentToolId() == toolId ) {
       // already loaded and visible.
       return;
    }
-   
+
    // else: toolview may still be loaded, but not visible...
-   
+
    ToolView* nextView = toolViewStack->findView( toolId );
-   
+
    if ( nextView == 0 ) {
       // toolview not loaded => load it.
-      
+
       // set up next view
       ToolObject* nextTool = valkyrie->valgrind()->getToolObj( toolId );
       vk_assert( nextTool != 0 );
-      
+
       // Factory Method to create views
       nextView = nextTool->createView( this );
       vk_assert( nextView != 0 );
-      
+
       connect( nextTool, SIGNAL( running( bool ) ),
                this,       SLOT( updateVgButtons( bool ) ) );
       connect( nextTool, SIGNAL( message( QString ) ),
                statusLabel,       SLOT( setText( QString ) ) );
-               
+
       // Set a vg logfile. Loading done by tool_object
       connect( nextView, SIGNAL( logFileChosen( QString ) ),
                this,       SLOT( setLogFile( QString ) ) );
-               
+
       //TODO: perhaps bring ToolObject::fileSaveDialog() here too...
       // + ToolObject::saveParsedOutput()...
-      
+
       // view starts tool processes via this signal
       connect( nextView, SIGNAL( run( VGTOOL::ToolProcessId ) ),
                this,       SLOT( runTool( VGTOOL::ToolProcessId ) ) );
-               
+
       // add view to the stack
       toolViewStack->addView( nextView );
-      
+
       // widgets (menubar, toolbar) have been added: update event filters
       updateEventFilters( this );
    }
-   
+
    // make sure the toolview is made visible:
-   
+
    toolViewStack->raiseView( nextView );
    setToggles( toolId );
 }
@@ -575,7 +575,7 @@ void MainWindow::setToggles( VGTOOL::ToolID toolId )
 {
    if ( toolId  == VGTOOL::ID_NULL ) {
       // no more tool views
-      
+
       // disable all actions in the tool actiongroup
       // TODO: nicer way to do this? - maybe connect sig/slot toolview to action?
       foreach( QAction * actTool, toolActionGroup->actions() ) {
@@ -587,23 +587,23 @@ void MainWindow::setToggles( VGTOOL::ToolID toolId )
    }
    else {
       // at least one toolview found: update state
-      
+
       // enable the relevant action in the tool actiongroup
       // TODO: nicer way to do this? - maybe connect sig/slot toolview to action?
       foreach( QAction * actTool, toolActionGroup->actions() ) {
          VGTOOL::ToolID toolId_action =
             ( VGTOOL::ToolID )actTool->property( "toolId" ).toInt();
-            
+
          if ( toolId_action == toolId ) {
             actTool->setChecked( true );
          }
          else {
             actTool->setChecked( false );
          }
-         
+
          //TODO: review toggle functionality.
       }
-      
+
       actFile_Close->setEnabled( true );
       updateVgButtons( false );
    }
@@ -614,7 +614,7 @@ void MainWindow::showLabels()
 {
    VkOption* opt = valkyrie->getOption( VALKYRIE::ICONTXT );
    bool show = vkCfgProj->value( opt->configKey() ).toBool();
-   
+
    if ( show ) {
       setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
    }
@@ -635,11 +635,11 @@ void MainWindow::setGenFont()
 {
    // TODO: qApp->setFont will be called twice if FNT_GEN_USR && FNT_GEN_SYS
    // are both modified together - do we care?
-   
+
    QFont fnt;
    VkOption* opt = valkyrie->getOption( VALKYRIE::FNT_GEN_SYS );
    bool useVkSysFont = vkCfgProj->value( opt->configKey() ).toBool();
-   
+
    if ( useVkSysFont ) {
       fnt = lastAppFont;
    }
@@ -649,7 +649,7 @@ void MainWindow::setGenFont()
       QString str_fnt = vkCfgProj->value( opt->configKey() ).toString();
       fnt.fromString( str_fnt );
    }
-   
+
    if ( qApp->font() != fnt ) {
       qApp->setFont( fnt );
    }
@@ -661,11 +661,11 @@ void MainWindow::setToolFont()
    VkOption* opt = valkyrie->getOption( VALKYRIE::FNT_TOOL_USR );
    QString str = vkCfgProj->value( opt->configKey() ).toString();
    fnt.fromString( str );
-   
+
    // set font for all tool views
    foreach( ToolObject * tool, valkyrie->valgrind()->getToolObjList() ) {
       ToolView* tv = tool->view();
-      
+
       if ( tv != NULL ) {
          tv->setToolFont( fnt );
       }
@@ -677,23 +677,23 @@ void MainWindow::setPalette()
    QPalette pal;
    VkOption* opt = valkyrie->getOption( VALKYRIE::PALETTE );
    bool useVkPalette = vkCfgProj->value( opt->configKey() ).toBool();
-   
+
    if ( !useVkPalette ) {
       pal = lastPalette;
    }
    else {
       lastPalette = qApp->palette();
-      
+
       QColor bg     = vkCfgGlbl->value( "colour_background" ).value<QColor>();
       QColor base   = vkCfgGlbl->value( "colour_base"       ).value<QColor>();
       QColor text   = vkCfgGlbl->value( "colour_text"       ).value<QColor>();
       QColor dkgray = vkCfgGlbl->value( "colour_dkgray"     ).value<QColor>();
       QColor hilite = vkCfgGlbl->value( "colour_highlight"  ).value<QColor>();
-      
+
       // anything not ok -> return default qApp palette:
       if ( bg.isValid() && base.isValid() && text.isValid() &&
            dkgray.isValid() && hilite.isValid() ) {
-           
+
          pal = QPalette( bg, bg );
          // 3 colour groups: active, inactive, disabled
          // bg colour for text entry widgets
@@ -730,7 +730,7 @@ void MainWindow::setPalette()
          pal.setColor( QPalette::Disabled, QPalette::HighlightedText, base );
       }
    }
-   
+
    if ( qApp->palette() != pal ) {
       qApp->setPalette( pal );
    }
@@ -764,7 +764,7 @@ void MainWindow::createNewProject()
    }
 
    QString proj_path = dlg.getProjectPath();
-   
+
    vkCfgProj->createNewProject( proj_path );
 
    setCurrentProject( proj_path );
@@ -777,11 +777,11 @@ void MainWindow::createNewProject()
 void MainWindow::openProject()
 {
    QString proj_fname = vkDlgCfgGetFile( this, "project_path" );
-   
+
    if ( proj_fname.isEmpty() ) {
       return;      // cancelled
    }
-   
+
    vkCfgProj->openProject( proj_fname );
 
    setCurrentProject( proj_fname );
@@ -796,7 +796,7 @@ void MainWindow::openRecentProject()
    QAction *action = qobject_cast<QAction *>(sender());
    if (action) {
       QString proj_fname = action->data().toString();
-      
+
       QFileInfo fi( proj_fname );
       if ( fi.exists() && fi.isFile() ) {
          // cache project path
@@ -824,7 +824,7 @@ void MainWindow::saveAsProject()
    if ( proj_fname.isEmpty() ) {
       return;      // cancelled
    }
-   
+
    vkCfgProj->saveProjectAs( proj_fname );
 
    setCurrentProject( proj_fname );
@@ -841,7 +841,7 @@ void MainWindow::setCurrentProject(const QString &projPath )
    QString projName = QFileInfo( projPath ).baseName();
    projName.replace( 0, 1, projName[0].toUpper() );
    setWindowTitle( VkCfg::appTitle() + " - " + projName );
-   
+
    QStringList files = vkCfgGlbl->value( "recent_projects" )
                        .toString().split( VkCfg::sepChar(), QString::SkipEmptyParts );
    files.removeAll( projPath );
@@ -887,16 +887,16 @@ void MainWindow::updateActionsRecentProjs()
 void MainWindow::closeToolView()
 {
    ToolView* tv = toolViewStack->currentView();
-   
+
    // if there ain't no toolview, we cain't do much
    if ( tv == 0 ) {
       vkPrintErr( "MainWindow::closeToolView(): No toolview. "
                   "This shouldn't happen!" );
       return;
    }
-   
+
    vkDebug( "MainWindow::closeToolView(): %s", qPrintable( tv->objectName() ) );
-        
+
    // last process might not be done ...
    if ( !valkyrie->queryToolDone( toolViewStack->currentToolId() ) ) {
       vkPrintErr( "Warning: Last process not finished" );
@@ -904,7 +904,7 @@ void MainWindow::closeToolView()
    }
 
    toolViewStack->removeView( tv );
-   
+
    // current toolview will now have changed (maybe to NULL)
    setToggles( toolViewStack->currentToolId() );
 }
@@ -938,15 +938,15 @@ void MainWindow::openOptions()
    if ( !optionsDialog ) {
       optionsDialog = new VkOptionsDialog( this );
    }
-   
+
    optionsDialog->show();
    optionsDialog->raise();
    optionsDialog->activateWindow();
 #else
    VkOptionsDialog optionsDlg( this );
-   
+
    updateEventFilters( &optionsDlg );
-   
+
    optionsDlg.exec();
 #endif
 }
@@ -957,7 +957,7 @@ void MainWindow::openOptions()
 */
 void MainWindow::runTool( VGTOOL::ToolProcessId procId )
 {
-   VGTOOL::ToolID tId = toolViewStack->currentToolId();   
+   VGTOOL::ToolID tId = toolViewStack->currentToolId();
 
    vk_assert( procId > VGTOOL::PROC_NONE );
 
@@ -968,7 +968,7 @@ void MainWindow::runTool( VGTOOL::ToolProcessId procId )
                   "This shouldn't happen!", procId );
       return;
    }
-   
+
    if ( procId == VGTOOL::PROC_VALGRIND ) {
       // Valkyrie may have been started with no executable
       // specified. If so, show msgbox, then options dialog
@@ -989,14 +989,14 @@ void MainWindow::runTool( VGTOOL::ToolProcessId procId )
       vkPrintErr( "Warning: Last process not finished" );
       return;
    }
-   
+
    if ( !valkyrie->runTool( tId, procId ) ) {
       //TODO: make sure all fail cases have given a message to the user already
-      
+
       VK_DEBUG( "Failed to complete execution for toolId (%d), procId (%d)",
                 tId, procId );
    }
-   
+
 }
 
 /*!
